@@ -8,15 +8,19 @@ import android.database.MatrixCursor
 import android.net.Uri
 import android.util.Log
 import com.spascoding.configmaster.di.ConfigProviderEntryPoint
+import com.spascoding.configmaster.domain.usecases.GetConfigUseCase
 import com.spascoding.configmaster.domain.usecases.SaveConfigUseCase
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
 
 class ConfigProvider : ContentProvider() {
 
     private lateinit var saveConfigUseCase: SaveConfigUseCase
+    private lateinit var getConfigUseCase: GetConfigUseCase
 
     companion object {
         const val AUTHORITY = "com.spascoding.configmaster.data.provider.ConfigProvider"
@@ -39,6 +43,10 @@ class ConfigProvider : ContentProvider() {
             appContext,
             ConfigProviderEntryPoint::class.java
         ).getSaveConfigUseCase()
+        getConfigUseCase = EntryPointAccessors.fromApplication(
+            appContext,
+            ConfigProviderEntryPoint::class.java
+        ).getConfigUseCase()
 
         return true
     }
@@ -53,9 +61,23 @@ class ConfigProvider : ContentProvider() {
         when (uriMatcher.match(uri)) {
             CODE_CONFIG -> {
                 val appId = selectionArgs?.get(0)
-                val json = "{\"key1\": \"value1\", \"key2\": \"value2\"}"
-                val matrixCursor = MatrixCursor(arrayOf("appId", "jsonData"))
-                matrixCursor.addRow(arrayOf(appId, json))
+                val matrixCursor: MatrixCursor
+                val jsonData = JSONObject()
+
+                runBlocking {
+                    // Fetch the updated config data from UseCase asynchronously
+                    val configEntities = appId?.let { getConfigUseCase.execute(it) }
+
+                    // Convert the result into JSON format
+                    configEntities?.forEach { config ->
+                        jsonData.put(config.key, config.modifiedValue)
+                    }
+
+                    // Create a cursor to return the data
+                    matrixCursor = MatrixCursor(arrayOf("appId", "jsonData"))
+                    matrixCursor.addRow(arrayOf(appId, jsonData.toString()))
+                }
+
                 return matrixCursor
             }
             else -> throw IllegalArgumentException("Unknown URI: $uri")

@@ -21,7 +21,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context,
             ConfigDatabase::class.java,
-            "config_database_2"
+            "config_database"
         ).fallbackToDestructiveMigration().build()
     }
 
