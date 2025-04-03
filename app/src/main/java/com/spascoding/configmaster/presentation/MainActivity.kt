@@ -23,12 +23,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ConfigMasterTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(
-                        modifier = Modifier.padding(innerPadding).fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "Config Master")
-                    }
+                    ConfigScreen()
                 }
             }
         }

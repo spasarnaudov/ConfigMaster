@@ -7,8 +7,16 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
 import android.util.Log
+import com.spascoding.configmaster.di.ConfigProviderEntryPoint
+import com.spascoding.configmaster.domain.usecases.SaveConfigUseCase
+import dagger.hilt.android.EntryPointAccessors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ConfigProvider : ContentProvider() {
+
+    private lateinit var saveConfigUseCase: SaveConfigUseCase
 
     companion object {
         const val AUTHORITY = "com.spascoding.configmaster.data.provider.ConfigProvider"
@@ -25,6 +33,13 @@ class ConfigProvider : ContentProvider() {
 
     override fun onCreate(): Boolean {
         Log.d(ConfigProvider::class.java.name, "ConfigProvider onCreate called")
+
+        val appContext = context ?: return false
+        saveConfigUseCase = EntryPointAccessors.fromApplication(
+            appContext,
+            ConfigProviderEntryPoint::class.java
+        ).getSaveConfigUseCase()
+
         return true
     }
 
@@ -57,6 +72,9 @@ class ConfigProvider : ContentProvider() {
                 Log.d(ConfigProvider::class.java.name, "insert")
                 Log.d(ConfigProvider::class.java.name, "$appId")
                 Log.d(ConfigProvider::class.java.name, "$jsonData")
+                CoroutineScope(Dispatchers.IO).launch {
+                    saveConfigUseCase.execute(appId.toString(), jsonData.toString())
+                }
                 uri
             }
             else -> throw IllegalArgumentException("Unknown URI: $uri")
