@@ -4,9 +4,9 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
+import android.database.MatrixCursor
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 
 class ConfigProvider : ContentProvider() {
 
@@ -24,7 +24,7 @@ class ConfigProvider : ContentProvider() {
     }
 
     override fun onCreate(): Boolean {
-        Log.d("ConfigProviderDebug", "ConfigProvider onCreate called")
+        Log.d(ConfigProvider::class.java.name, "ConfigProvider onCreate called")
         return true
     }
 
@@ -34,12 +34,14 @@ class ConfigProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<String>?,
         sortOrder: String?
-    ): Cursor? {
+    ): Cursor {
         when (uriMatcher.match(uri)) {
             CODE_CONFIG -> {
-                Log.d("ConfigProviderDebug", "query uri $uri")
-                Log.d("ConfigProviderDebug", "query values $selectionArgs")
-                return null
+                val appId = selectionArgs?.get(0)
+                val json = "{\"key1\": \"value1\", \"key2\": \"value2\"}"
+                val matrixCursor = MatrixCursor(arrayOf("appId", "jsonData"))
+                matrixCursor.addRow(arrayOf(appId, json))
+                return matrixCursor
             }
             else -> throw IllegalArgumentException("Unknown URI: $uri")
         }
@@ -50,8 +52,11 @@ class ConfigProvider : ContentProvider() {
     override fun insert(uri: Uri, values: ContentValues?): Uri {
         return when (uriMatcher.match(uri)) {
             CODE_CONFIG -> {
-                Log.d("ConfigProviderDebug", "insert uri $uri")
-                Log.d("ConfigProviderDebug", "insert values $values")
+                val appId = values?.getAsString("appId")
+                val jsonData = values?.getAsString("jsonData")
+                Log.d(ConfigProvider::class.java.name, "insert")
+                Log.d(ConfigProvider::class.java.name, "$appId")
+                Log.d(ConfigProvider::class.java.name, "$jsonData")
                 uri
             }
             else -> throw IllegalArgumentException("Unknown URI: $uri")
@@ -62,8 +67,11 @@ class ConfigProvider : ContentProvider() {
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int {
         when (uriMatcher.match(uri)) {
             CODE_CONFIG -> {
-                Log.d("ConfigProviderDebug", "update uri $uri")
-                Log.d("ConfigProviderDebug", "update values $values")
+                val appId = values?.getAsString("appId")
+                val jsonData = values?.getAsString("jsonData")
+                Log.d(ConfigProvider::class.java.name, "update")
+                Log.d(ConfigProvider::class.java.name, "$appId")
+                Log.d(ConfigProvider::class.java.name, "$jsonData")
                 return 0
             }
             else -> throw IllegalArgumentException("Unknown URI: $uri")
@@ -74,7 +82,9 @@ class ConfigProvider : ContentProvider() {
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         when (uriMatcher.match(uri)) {
             CODE_CONFIG -> {
-                Log.d("ConfigProviderDebug", "delete uri $uri")
+                val appId = selectionArgs?.get(0)
+                Log.d(ConfigProvider::class.java.name, "delete")
+                Log.d(ConfigProvider::class.java.name, "$appId")
                 return 0
             }
             else -> throw IllegalArgumentException("Unknown URI: $uri")
