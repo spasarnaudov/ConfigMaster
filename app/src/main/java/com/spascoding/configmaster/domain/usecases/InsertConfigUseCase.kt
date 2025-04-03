@@ -4,8 +4,10 @@ import com.spascoding.configmaster.data.repository.ConfigRepository
 import com.spascoding.configmaster.domain.models.ConfigEntity
 import javax.inject.Inject
 
-class GetAllConfigsUseCase @Inject constructor(private val repository: ConfigRepository) {
-    suspend fun execute(): List<ConfigEntity> {
-        return repository.getAllConfigs()
+class InsertConfigUseCase @Inject constructor(private val repository: ConfigRepository) {
+
+    suspend fun execute(configList: List<ConfigEntity>) {
+        repository.insertConfig(configList)
     }
+
 }

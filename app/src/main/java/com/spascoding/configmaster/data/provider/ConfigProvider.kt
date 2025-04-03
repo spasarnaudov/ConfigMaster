@@ -8,8 +8,9 @@ import android.database.MatrixCursor
 import android.net.Uri
 import android.util.Log
 import com.spascoding.configmaster.di.ConfigProviderEntryPoint
+import com.spascoding.configmaster.domain.models.ConfigEntity
 import com.spascoding.configmaster.domain.usecases.GetConfigUseCase
-import com.spascoding.configmaster.domain.usecases.SaveConfigUseCase
+import com.spascoding.configmaster.domain.usecases.InsertConfigUseCase
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,7 @@ import org.json.JSONObject
 
 class ConfigProvider : ContentProvider() {
 
-    private lateinit var saveConfigUseCase: SaveConfigUseCase
+    private lateinit var insertConfigUseCase: InsertConfigUseCase
     private lateinit var getConfigUseCase: GetConfigUseCase
 
     companion object {
@@ -39,7 +40,7 @@ class ConfigProvider : ContentProvider() {
         Log.d(ConfigProvider::class.java.name, "ConfigProvider onCreate called")
 
         val appContext = context ?: return false
-        saveConfigUseCase = EntryPointAccessors.fromApplication(
+        insertConfigUseCase = EntryPointAccessors.fromApplication(
             appContext,
             ConfigProviderEntryPoint::class.java
         ).getSaveConfigUseCase()
@@ -94,8 +95,9 @@ class ConfigProvider : ContentProvider() {
                 Log.d(ConfigProvider::class.java.name, "insert")
                 Log.d(ConfigProvider::class.java.name, "$appId")
                 Log.d(ConfigProvider::class.java.name, "$jsonData")
+                val configList = parseJsonToEntities(appId.toString(), jsonData.toString())
                 CoroutineScope(Dispatchers.IO).launch {
-                    saveConfigUseCase.execute(appId.toString(), jsonData.toString())
+                    insertConfigUseCase.execute(configList)
                 }
                 uri
             }
@@ -103,33 +105,20 @@ class ConfigProvider : ContentProvider() {
         }
     }
 
-    // Update existing configuration
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int {
-        when (uriMatcher.match(uri)) {
-            CODE_CONFIG -> {
-                val appId = values?.getAsString("appId")
-                val jsonData = values?.getAsString("jsonData")
-                Log.d(ConfigProvider::class.java.name, "update")
-                Log.d(ConfigProvider::class.java.name, "$appId")
-                Log.d(ConfigProvider::class.java.name, "$jsonData")
-                return 0
-            }
-            else -> throw IllegalArgumentException("Unknown URI: $uri")
-        }
+        return 0
     }
 
-    // Delete configuration
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
-        when (uriMatcher.match(uri)) {
-            CODE_CONFIG -> {
-                val appId = selectionArgs?.get(0)
-                Log.d(ConfigProvider::class.java.name, "delete")
-                Log.d(ConfigProvider::class.java.name, "$appId")
-                return 0
-            }
-            else -> throw IllegalArgumentException("Unknown URI: $uri")
-        }
+        return 0
     }
 
     override fun getType(uri: Uri): String? = null
+
+    private fun parseJsonToEntities(appId: String, jsonData: String): List<ConfigEntity> {
+        val jsonObject = JSONObject(jsonData)
+        return jsonObject.keys().asSequence().map { key ->
+            ConfigEntity(appId = appId, key = key, originalValue = jsonObject.getString(key))
+        }.toList()
+    }
 }
