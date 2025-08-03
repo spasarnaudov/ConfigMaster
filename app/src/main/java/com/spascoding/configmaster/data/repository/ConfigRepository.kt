@@ -8,6 +8,12 @@ import javax.inject.Inject
 
 class ConfigRepository @Inject constructor(private val configDao: ConfigDao) {
 
+    suspend fun getAllAppIds(): List<String> {
+        return withContext(Dispatchers.IO) {
+            configDao.getAllAppIds()
+        }
+    }
+
     suspend fun getConfig(appId: String): List<ConfigEntity> {
         return withContext(Dispatchers.IO) {
             configDao.getConfig(appId)

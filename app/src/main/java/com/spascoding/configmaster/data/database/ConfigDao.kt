@@ -9,6 +9,9 @@ import com.spascoding.configmaster.domain.models.ConfigEntity
 @Dao
 interface ConfigDao {
 
+    @Query("SELECT DISTINCT appId FROM configurations")
+    suspend fun getAllAppIds(): List<String>
+
     @Query("SELECT * FROM configurations WHERE appId = :appId")
     suspend fun getConfig(appId: String): List<ConfigEntity>
 

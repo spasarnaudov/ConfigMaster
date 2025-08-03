@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spascoding.configmaster.domain.models.ConfigEntity
+import com.spascoding.configmaster.domain.usecases.GetAllAppIdsUseCase
 import com.spascoding.configmaster.domain.usecases.GetConfigUseCase
 import com.spascoding.configmaster.domain.usecases.InsertConfigUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,14 +16,36 @@ import javax.inject.Inject
 class ConfigViewModel @Inject constructor(
     private val insertConfigUseCase: InsertConfigUseCase,
     private val getConfigUseCase: GetConfigUseCase,
+    private val getAllAppIdsUseCase: GetAllAppIdsUseCase
 ) : ViewModel() {
 
     private val _config = MutableLiveData<List<ConfigEntity>>()
     val config: LiveData<List<ConfigEntity>> = _config
 
-    fun fetchConfigs() {
+    private val _appIds = MutableLiveData<List<String>>()
+    val appIds: LiveData<List<String>> = _appIds
+
+    var selectedAppId: String? = null
+        private set
+
+    fun fetchAppIds() {
         viewModelScope.launch {
-            val configList = getConfigUseCase.execute("DemoApp1")
+            val ids = getAllAppIdsUseCase.execute() // returns List<String>
+            _appIds.postValue(ids)
+            if (selectedAppId == null && ids.isNotEmpty()) {
+                selectAppId(ids.first())
+            }
+        }
+    }
+
+    fun selectAppId(appId: String) {
+        selectedAppId = appId
+        fetchConfigs(appId)
+    }
+
+    private fun fetchConfigs(appId: String) {
+        viewModelScope.launch {
+            val configList = getConfigUseCase.execute(appId)
             _config.postValue(configList)
         }
     }
