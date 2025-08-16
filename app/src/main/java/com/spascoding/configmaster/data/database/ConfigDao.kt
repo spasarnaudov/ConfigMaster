@@ -20,4 +20,7 @@ interface ConfigDao {
 
     @Query("DELETE FROM configurations WHERE appId = :appId AND `key` IN (:keys)")
     suspend fun deleteConfig(appId: String, keys: List<String>)
+
+    @Query("DELETE FROM configurations WHERE appId = :appId")
+    suspend fun deleteConfiguration(appId: String)
 }

@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spascoding.configmaster.data.preferences.AppPreferences
 import com.spascoding.configmaster.domain.models.ConfigEntity
+import com.spascoding.configmaster.domain.usecases.DeleteConfigurationUseCase
 import com.spascoding.configmaster.domain.usecases.GetAllAppIdsUseCase
 import com.spascoding.configmaster.domain.usecases.GetConfigUseCase
 import com.spascoding.configmaster.domain.usecases.InsertConfigUseCase
@@ -21,6 +22,7 @@ class ConfigViewModel @Inject constructor(
     private val insertConfigUseCase: InsertConfigUseCase,
     private val getConfigUseCase: GetConfigUseCase,
     private val getAllAppIdsUseCase: GetAllAppIdsUseCase,
+    private val deleteConfigurationUseCase: DeleteConfigurationUseCase,
     private val appPreferences: AppPreferences
 ) : ViewModel() {
 
@@ -68,6 +70,12 @@ class ConfigViewModel @Inject constructor(
         }
         viewModelScope.launch {
             insertConfigUseCase.execute(listOf(updatedConfig)) // save immediately
+        }
+    }
+
+    fun deleteConfig(appId: String) {
+        viewModelScope.launch {
+            deleteConfigurationUseCase.execute(appId)
         }
     }
 

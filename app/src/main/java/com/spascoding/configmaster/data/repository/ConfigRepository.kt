@@ -24,8 +24,12 @@ class ConfigRepository @Inject constructor(private val configDao: ConfigDao) {
         configDao.insertConfig(configList)
     }
 
-    suspend fun deleteConfig(appId: String, configList: List<String>) {
+    suspend fun deleteConfigParameters(appId: String, configList: List<String>) {
         configDao.deleteConfig(appId, configList)
+    }
+
+    suspend fun deleteConfiguration(appId: String) {
+        configDao.deleteConfiguration(appId)
     }
 
 }

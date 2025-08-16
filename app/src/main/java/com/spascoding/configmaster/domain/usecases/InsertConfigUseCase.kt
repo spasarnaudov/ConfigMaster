@@ -46,7 +46,7 @@ class InsertConfigUseCase @Inject constructor(
         repository.insertConfig(toUpdate)
         repository.insertConfig(toInsert)
         if (toDelete.isNotEmpty()) {
-            repository.deleteConfig(appId, toDelete)
+            repository.deleteConfigParameters(appId, toDelete)
         }
     }
 }
