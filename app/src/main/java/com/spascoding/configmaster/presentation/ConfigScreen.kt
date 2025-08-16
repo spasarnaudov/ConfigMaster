@@ -64,18 +64,7 @@ fun ConfigScreen(viewModel: ConfigViewModel = hiltViewModel()) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.size(16.dp))
-
-        Row (
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            val context = LocalContext.current
-            Text("Config Master - v " + getAppVersionName(context), style = MaterialTheme.typography.headlineSmall)
-            Spacer(Modifier.width(24.dp))
-            Button(onClick = { viewModel.saveConfig() }) {
-                Icon(Icons.Filled.Done, "Save")
-            }
-        }
-
+        Text("Config Master - v " + getAppVersionName(LocalContext.current), style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(8.dp))
 
         PersistentSelectedItemDropdown(
@@ -94,7 +83,7 @@ fun ConfigScreen(viewModel: ConfigViewModel = hiltViewModel()) {
                 ConfigRowBordered (
                     config = config,
                     onModifiedValueChanged = { newValue ->
-                        viewModel.updateModifiedValue(config, newValue)
+                        viewModel.updateModifiedValueAndSave(config, newValue)
                     }
                 )
             }

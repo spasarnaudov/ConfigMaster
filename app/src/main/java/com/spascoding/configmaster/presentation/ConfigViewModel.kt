@@ -61,16 +61,13 @@ class ConfigViewModel @Inject constructor(
         }
     }
 
-    fun updateModifiedValue(config: ConfigEntity, newValue: String) {
+    fun updateModifiedValueAndSave(config: ConfigEntity, newValue: String) {
         val updatedConfig = config.copy(modifiedValue = newValue)
         _config.value = _config.value?.map {
             if (it.appId == config.appId && it.key == config.key) updatedConfig else it
         }
-    }
-
-    fun saveConfig() {
         viewModelScope.launch {
-            _config.value?.let { insertConfigUseCase.execute(it) }
+            insertConfigUseCase.execute(listOf(updatedConfig)) // save immediately
         }
     }
 

@@ -92,12 +92,10 @@ class ConfigProvider : ContentProvider() {
             CODE_CONFIG -> {
                 val appId = values?.getAsString("appId")
                 val jsonData = values?.getAsString("jsonData")
-                Log.d(ConfigProvider::class.java.name, "insert")
-                Log.d(ConfigProvider::class.java.name, "$appId")
-                Log.d(ConfigProvider::class.java.name, "$jsonData")
-                val configList = parseJsonToEntities(appId.toString(), jsonData.toString())
-                CoroutineScope(Dispatchers.IO).launch {
-                    insertConfigUseCase.execute(configList)
+                if (appId != null && jsonData != null) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        insertConfigUseCase.execute(appId, jsonData) // 👈 sync logic
+                    }
                 }
                 uri
             }

@@ -18,4 +18,6 @@ interface ConfigDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConfig(configList: List<ConfigEntity>)
 
+    @Query("DELETE FROM configurations WHERE appId = :appId AND `key` IN (:keys)")
+    suspend fun deleteConfig(appId: String, keys: List<String>)
 }
