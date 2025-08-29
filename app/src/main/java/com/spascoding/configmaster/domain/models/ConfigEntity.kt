@@ -1,12 +1,11 @@
 package com.spascoding.configmaster.domain.models
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "configurations", primaryKeys = ["appId", "key"])
+@Entity(tableName = "configurations", primaryKeys = ["name", "parameter"])
 data class ConfigEntity(
-    val appId: String,
-    val key: String,
+    val name: String,
+    val parameter: String,
     val originalValue: String,
     val modifiedValue: String = "",
 )

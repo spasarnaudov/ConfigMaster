@@ -12,20 +12,20 @@ class InsertConfigUseCase @Inject constructor(
         repository.insertConfig(configs)
     }
 
-    suspend fun execute(appId: String, newJson: String) {
+    suspend fun execute(configName: String, newJson: String) {
         val newJsonObject = JSONObject(newJson)
-        val newKeys = newJsonObject.keys().asSequence().toSet()
+        val newParameters = newJsonObject.keys().asSequence().toSet()
 
-        val existing = repository.getConfig(appId)
-        val existingKeys = existing.map { it.key }.toSet()
+        val existing = repository.getConfig(configName)
+        val existingParameters = existing.map { it.parameter }.toSet()
 
         val toInsert = mutableListOf<ConfigEntity>()
         val toUpdate = mutableListOf<ConfigEntity>()
 
         // Update existing keys
         existing.forEach { entity ->
-            if (newKeys.contains(entity.key)) {
-                val newOriginal = newJsonObject.getString(entity.key)
+            if (newParameters.contains(entity.parameter)) {
+                val newOriginal = newJsonObject.getString(entity.parameter)
                 val updatedEntity = entity.copy(
                     originalValue = newOriginal,
                     modifiedValue = entity.modifiedValue.ifEmpty { newOriginal } // preserve modified if not empty
@@ -35,18 +35,18 @@ class InsertConfigUseCase @Inject constructor(
         }
 
         // Insert new keys
-        (newKeys - existingKeys).forEach { key ->
-            val value = newJsonObject.getString(key)
-            toInsert.add(ConfigEntity(appId, key, value, value))
+        (newParameters - existingParameters).forEach { parameter ->
+            val value = newJsonObject.getString(parameter)
+            toInsert.add(ConfigEntity(configName, parameter, value, value))
         }
 
         // Delete missing keys
-        val toDelete = (existingKeys - newKeys).toList()
+        val toDelete = (existingParameters - newParameters).toList()
 
         repository.insertConfig(toUpdate)
         repository.insertConfig(toInsert)
         if (toDelete.isNotEmpty()) {
-            repository.deleteConfigParameters(appId, toDelete)
+            repository.deleteConfigParameters(configName, toDelete)
         }
     }
 }

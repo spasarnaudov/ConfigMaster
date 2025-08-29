@@ -47,7 +47,7 @@ fun ConfigDialog(
             }
         },
         // Key instead of generic title
-        title = { Text(config.key, style = MaterialTheme.typography.titleLarge) },
+        title = { Text(config.parameter, style = MaterialTheme.typography.titleLarge) },
         text = {
             Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
 

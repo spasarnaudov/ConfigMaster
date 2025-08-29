@@ -19,16 +19,16 @@ class AppPreferences @Inject constructor(
 ) : PreferencesRepository {
 
     companion object {
-        private val SELECTED_APP_ID = stringPreferencesKey("selected_app_id")
+        private val SELECTED_CONFIG = stringPreferencesKey("selected_config")
     }
 
-    override suspend fun saveSelectedAppId(appId: String) {
-        context.dataStore.edit { prefs -> prefs[SELECTED_APP_ID] = appId }
+    override suspend fun saveSelectedConfig(configName: String) {
+        context.dataStore.edit { prefs -> prefs[SELECTED_CONFIG] = configName }
     }
 
-    override suspend fun getSelectedAppId(): String? {
+    override suspend fun getSelectedConfig(): String? {
         return context.dataStore.data
-            .map { prefs -> prefs[SELECTED_APP_ID] }
+            .map { prefs -> prefs[SELECTED_CONFIG] }
             .first()
     }
 }

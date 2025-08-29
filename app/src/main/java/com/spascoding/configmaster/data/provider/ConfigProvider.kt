@@ -8,7 +8,6 @@ import android.database.MatrixCursor
 import android.net.Uri
 import android.util.Log
 import com.spascoding.configmaster.di.ConfigProviderEntryPoint
-import com.spascoding.configmaster.domain.models.ConfigEntity
 import com.spascoding.configmaster.domain.usecases.GetConfigUseCase
 import com.spascoding.configmaster.domain.usecases.InsertConfigUseCase
 import dagger.hilt.android.EntryPointAccessors
@@ -61,22 +60,22 @@ class ConfigProvider : ContentProvider() {
     ): Cursor {
         when (uriMatcher.match(uri)) {
             CODE_CONFIG -> {
-                val appId = selectionArgs?.get(0)
+                val configName = selectionArgs?.get(0)
                 val matrixCursor: MatrixCursor
                 val jsonData = JSONObject()
 
                 runBlocking {
                     // Fetch the updated config data from UseCase asynchronously
-                    val configEntities = appId?.let { getConfigUseCase.execute(it) }
+                    val configEntities = configName?.let { getConfigUseCase.execute(it) }
 
                     // Convert the result into JSON format
                     configEntities?.forEach { config ->
-                        jsonData.put(config.key, config.modifiedValue)
+                        jsonData.put(config.parameter, config.modifiedValue)
                     }
 
                     // Create a cursor to return the data
-                    matrixCursor = MatrixCursor(arrayOf("appId", "jsonData"))
-                    matrixCursor.addRow(arrayOf(appId, jsonData.toString()))
+                    matrixCursor = MatrixCursor(arrayOf("configName", "jsonData"))
+                    matrixCursor.addRow(arrayOf(configName, jsonData.toString()))
                 }
 
                 return matrixCursor
@@ -90,11 +89,11 @@ class ConfigProvider : ContentProvider() {
     override fun insert(uri: Uri, values: ContentValues?): Uri {
         return when (uriMatcher.match(uri)) {
             CODE_CONFIG -> {
-                val appId = values?.getAsString("appId")
+                val configName = values?.getAsString("configName")
                 val jsonData = values?.getAsString("jsonData")
-                if (appId != null && jsonData != null) {
+                if (configName != null && jsonData != null) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        insertConfigUseCase.execute(appId, jsonData) // 👈 sync logic
+                        insertConfigUseCase.execute(configName, jsonData) // 👈 sync logic
                     }
                 }
                 uri
@@ -112,11 +111,4 @@ class ConfigProvider : ContentProvider() {
     }
 
     override fun getType(uri: Uri): String? = null
-
-    private fun parseJsonToEntities(appId: String, jsonData: String): List<ConfigEntity> {
-        val jsonObject = JSONObject(jsonData)
-        return jsonObject.keys().asSequence().map { key ->
-            ConfigEntity(appId = appId, key = key, originalValue = jsonObject.getString(key))
-        }.toList()
-    }
 }

@@ -5,7 +5,7 @@ import com.spascoding.configmaster.domain.models.ConfigEntity
 import javax.inject.Inject
 
 class GetConfigUseCase @Inject constructor(private val repository: ConfigRepository) {
-    suspend fun execute(appId: String): List<ConfigEntity> {
-        return repository.getConfig(appId)
+    suspend fun execute(configName: String): List<ConfigEntity> {
+        return repository.getConfig(configName)
     }
 }

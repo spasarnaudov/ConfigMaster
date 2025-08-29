@@ -31,11 +31,11 @@ fun getAppVersionName(context: Context): String {
 
 @Composable
 fun ConfigScreen(viewModel: ConfigViewModel = hiltViewModel()) {
-    val configs by viewModel.config.observeAsState(emptyList())
-    val appIds by viewModel.appIds.observeAsState(emptyList())
+    val configs by viewModel.configs.observeAsState(emptyList())
+    val configNames by viewModel.configNames.observeAsState(emptyList())
 
     LaunchedEffect(Unit) {
-        viewModel.fetchAppIds()
+        viewModel.fetchData()
     }
 
     Column(
@@ -49,9 +49,9 @@ fun ConfigScreen(viewModel: ConfigViewModel = hiltViewModel()) {
         Spacer(Modifier.height(8.dp))
 
         PersistentSelectedItemDropdown(
-            items = appIds,
-            selectedItem = viewModel.selectedAppId,
-            onItemSelect = { viewModel.selectAppId(it) },
+            items = configNames,
+            selectedItem = viewModel.selectedConfigName,
+            onItemSelect = { viewModel.selectConfig(it) },
             onDeleteSelected = { viewModel.deleteConfig(it) }
         )
 

@@ -41,7 +41,7 @@ fun ConfigRowBordered(
         .padding(8.dp)
     ) {
         Column {
-            Text(config.key, style = MaterialTheme.typography.bodyLarge)
+            Text(config.parameter, style = MaterialTheme.typography.bodyLarge)
             Text("Original: ${config.originalValue}", style = MaterialTheme.typography.bodyMedium)
             Text("Modified: ${config.modifiedValue}", style = MaterialTheme.typography.bodyMedium)
         }

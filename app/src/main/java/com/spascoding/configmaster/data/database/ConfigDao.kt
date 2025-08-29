@@ -9,18 +9,18 @@ import com.spascoding.configmaster.domain.models.ConfigEntity
 @Dao
 interface ConfigDao {
 
-    @Query("SELECT DISTINCT appId FROM configurations")
-    suspend fun getAllAppIds(): List<String>
+    @Query("SELECT DISTINCT name FROM configurations")
+    suspend fun getAllConfigNames(): List<String>
 
-    @Query("SELECT * FROM configurations WHERE appId = :appId")
-    suspend fun getConfig(appId: String): List<ConfigEntity>
+    @Query("SELECT * FROM configurations WHERE name = :configName")
+    suspend fun getConfig(configName: String): List<ConfigEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConfig(configList: List<ConfigEntity>)
 
-    @Query("DELETE FROM configurations WHERE appId = :appId AND `key` IN (:keys)")
-    suspend fun deleteConfig(appId: String, keys: List<String>)
+    @Query("DELETE FROM configurations WHERE name = :configName AND parameter IN (:parameterNames)")
+    suspend fun deleteConfig(configName: String, parameterNames: List<String>)
 
-    @Query("DELETE FROM configurations WHERE appId = :appId")
-    suspend fun deleteConfiguration(appId: String)
+    @Query("DELETE FROM configurations WHERE name = :configName")
+    suspend fun deleteConfig(configName: String)
 }

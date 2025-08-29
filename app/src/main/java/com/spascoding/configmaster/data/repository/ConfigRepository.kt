@@ -8,28 +8,28 @@ import javax.inject.Inject
 
 class ConfigRepository @Inject constructor(private val configDao: ConfigDao) {
 
-    suspend fun getAllAppIds(): List<String> {
+    suspend fun getAllConfigNames(): List<String> {
         return withContext(Dispatchers.IO) {
-            configDao.getAllAppIds()
+            configDao.getAllConfigNames()
         }
     }
 
-    suspend fun getConfig(appId: String): List<ConfigEntity> {
+    suspend fun getConfig(configName: String): List<ConfigEntity> {
         return withContext(Dispatchers.IO) {
-            configDao.getConfig(appId)
+            configDao.getConfig(configName)
         }
     }
 
-    suspend fun insertConfig(configList: List<ConfigEntity>) {
-        configDao.insertConfig(configList)
+    suspend fun insertConfig(configs: List<ConfigEntity>) {
+        configDao.insertConfig(configs)
     }
 
-    suspend fun deleteConfigParameters(appId: String, configList: List<String>) {
-        configDao.deleteConfig(appId, configList)
+    suspend fun deleteConfigParameters(configName: String, configNames: List<String>) {
+        configDao.deleteConfig(configName, configNames)
     }
 
-    suspend fun deleteConfiguration(appId: String) {
-        configDao.deleteConfiguration(appId)
+    suspend fun deleteConfig(configName: String) {
+        configDao.deleteConfig(configName)
     }
 
 }
