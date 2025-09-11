@@ -1,7 +1,8 @@
-package com.spascoding.configmasterhelper.kotlinhelper
+package com.spascoding.configmasterhelper
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 
@@ -14,6 +15,9 @@ object ConfigMasterHelper {
      * Insert or update configuration into ConfigMaster
      */
     fun insertConfig(context: Context, configName: String, jsonData: String) {
+        if (!isPackageInstalled(context, "com.spascoding.configmaster")) {
+            return
+        }
         val values = ContentValues().apply {
             put("configName", configName)
             put("jsonData", jsonData)
@@ -41,5 +45,15 @@ object ConfigMasterHelper {
             }
         }
         return jsonData
+    }
+
+    private fun isPackageInstalled(context: Context, packageName: String): Boolean {
+        val packageManager = context.getPackageManager()
+        try {
+            packageManager.getPackageInfo(packageName, 0)
+            return true
+        } catch (e: PackageManager.NameNotFoundException) {
+            return false
+        }
     }
 }

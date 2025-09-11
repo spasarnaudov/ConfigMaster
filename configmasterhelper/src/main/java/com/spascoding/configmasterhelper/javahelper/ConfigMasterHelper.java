@@ -2,6 +2,7 @@ package com.spascoding.configmasterhelper.javahelper;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
@@ -15,6 +16,11 @@ public class ConfigMasterHelper {
      * Insert or update configuration into ConfigMaster
      */
     public static void insertConfig(Context context, String configName, String jsonData) {
+
+        if (!isPackageInstalled(context, "com.spascoding.configmaster")) {
+            return;
+        }
+
         ContentValues values = new ContentValues();
         values.put("configName", configName);
         values.put("jsonData", jsonData);
@@ -46,6 +52,16 @@ public class ConfigMasterHelper {
             }
         }
         return jsonData;
+    }
+
+    private static boolean isPackageInstalled(Context context, String packageName) {
+        PackageManager packageManager = context.getPackageManager();
+        try {
+            packageManager.getPackageInfo(packageName, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 }
 
