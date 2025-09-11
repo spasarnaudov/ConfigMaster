@@ -10,7 +10,7 @@ import android.util.Log;
 public class ConfigMasterHelper {
 
     private static final Uri CONFIG_URI =
-            Uri.parse("content://com.spascoding.configmaster.data.provider.ConfigProvider/config");
+            Uri.parse("content://com.spascoding.configmaster.data.provider.ConfigProvider");
 
     /**
      * Insert or update configuration into ConfigMaster

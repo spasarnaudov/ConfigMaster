@@ -9,7 +9,7 @@ import android.util.Log
 object ConfigMasterHelper {
 
     private val CONFIG_URI: Uri =
-        Uri.parse("content://com.spascoding.configmaster.data.provider.ConfigProvider/config")
+        Uri.parse("content://com.spascoding.configmaster.data.provider.ConfigProvider")
 
     /**
      * Insert or update configuration into ConfigMaster

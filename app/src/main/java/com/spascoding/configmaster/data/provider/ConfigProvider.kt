@@ -24,14 +24,11 @@ class ConfigProvider : ContentProvider() {
 
     companion object {
         const val AUTHORITY = "com.spascoding.configmaster.data.provider.ConfigProvider"
-        val CONTENT_URI: Uri = Uri.parse("content://$AUTHORITY/config")
 
         const val CODE_CONFIG = 1
-        const val CODE_CONFIG_ITEM = 2
 
         private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
-            addURI(AUTHORITY, "config", CODE_CONFIG)
-            addURI(AUTHORITY, "config/*", CODE_CONFIG_ITEM)
+            addURI(AUTHORITY, null, CODE_CONFIG)
         }
     }
 
