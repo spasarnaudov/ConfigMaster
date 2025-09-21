@@ -50,7 +50,7 @@ publishing {
         create<MavenPublication>("release") {
             groupId = "com.spascoding"
             artifactId = "config-master-helper"
-            version = "0.0.2"
+            version = "0.0.3"
 
             afterEvaluate {
                 from(components["release"])
