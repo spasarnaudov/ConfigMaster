@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
+import org.json.JSONObject
 
 object ConfigMasterHelper {
 
@@ -45,6 +46,26 @@ object ConfigMasterHelper {
             }
         }
         return jsonData
+    }
+
+    /**
+     * Fetch a single parameter value by key from configuration JSON
+     */
+    fun fetchConfigParam(context: Context, configName: String, paramKey: String): String? {
+        val jsonData = fetchConfig(context, configName)
+        if (jsonData.isNullOrEmpty()) return null
+
+        return try {
+            val jsonObject = JSONObject(jsonData)
+            if (jsonObject.has(paramKey)) {
+                jsonObject.getString(paramKey)
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("ConfigMasterHelper", "Error parsing JSON: ${e.message}")
+            null
+        }
     }
 
     private fun isPackageInstalled(context: Context, packageName: String): Boolean {

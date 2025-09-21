@@ -74,5 +74,6 @@ publishing {
                 password = localProperties.getProperty("gpr.key")
             }
         }
+        mavenLocal()
     }
 }
