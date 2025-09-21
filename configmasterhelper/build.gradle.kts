@@ -77,3 +77,14 @@ publishing {
         mavenLocal()
     }
 }
+
+// --- Auto-publish tasks ---
+
+// Automatically publish to local Maven repository after build
+tasks.register("buildAndPublishLocal") {
+    group = "publishing"
+    description = "Build library and publish to local Maven repository"
+
+    dependsOn("build")
+    finalizedBy("publishToMavenLocal")
+}
