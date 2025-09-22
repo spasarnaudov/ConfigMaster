@@ -27,6 +27,15 @@ To use **ConfigMasterHelper** in your Android project, follow these steps:
 In your **`settings.gradle.kts`**, ensure you have the GitHub Maven repository configured:
 
 ```kotlin
+val localProperties = Properties().apply {
+    val localPropsFile = File(rootDir, "local.properties")
+    if (localPropsFile.exists()) {
+        load(FileInputStream(localPropsFile))
+    } else {
+        println("local.properties not found in root directory!")
+    }
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
@@ -70,7 +79,7 @@ In your app/build.gradle.kts, add the dependency:
 
 ```agsl
 dependencies {
-    implementation("com.spascoding:configmasterhelper:0.0.3")
+    implementation("com.spascoding:config-master-helper:0.0.3")
 }
 ```
 
