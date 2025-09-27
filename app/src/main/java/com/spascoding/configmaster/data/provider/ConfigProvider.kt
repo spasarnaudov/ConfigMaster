@@ -8,8 +8,8 @@ import android.database.MatrixCursor
 import android.net.Uri
 import android.util.Log
 import com.spascoding.configmaster.di.ConfigProviderEntryPoint
-import com.spascoding.configmaster.domain.usecases.GetConfigUseCase
-import com.spascoding.configmaster.domain.usecases.InsertConfigUseCase
+import com.spascoding.configmastersdk.domain.usecases.GetConfigUseCase
+import com.spascoding.configmastersdk.domain.usecases.InsertConfigUseCase
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

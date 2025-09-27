@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "ConfigMaster"
 include(":app")
 include(":configmasterhelper")
+include(":configmastersdk")

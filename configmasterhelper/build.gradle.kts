@@ -67,7 +67,7 @@ publishing {
 
     repositories {
         maven {
-            name = "GitHubPackages"
+            name = "ConfigMasterHelper"
             url = uri("https://maven.pkg.github.com/spasarnaudov/ConfigMaster")
             credentials {
                 username = localProperties.getProperty("gpr.user")

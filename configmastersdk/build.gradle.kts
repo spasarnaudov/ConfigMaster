@@ -1,23 +1,31 @@
+import java.util.Properties
+import kotlin.apply
+
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
+    id("maven-publish")
 }
 
+val versionCode = 1
+val versionName = "0.0.$versionCode"
+
 android {
-    namespace = "com.spascoding.configmaster"
+    namespace = "com.configmastersdk"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.spascoding.configmaster"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 2
-        versionName = "0.0.${versionCode}"
+
+        android.buildFeatures.buildConfig = true
+        buildConfigField("int", "VERSION_CODE", versionCode.toString())
+        buildConfigField("String", "VERSION_NAME", "\"$versionName\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -36,13 +44,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
-    implementation(project(":configmastersdk"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -75,4 +79,48 @@ dependencies {
 
     //DataStore
     implementation(libs.androidx.datastore.preferences)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("release") {
+            groupId = "com.spascoding"
+            artifactId = "config-master-sdk"
+            version = versionName
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+
+    val localProperties = Properties().apply {
+        val localPropsFile = rootProject.file("local.properties")
+        if (localPropsFile.exists()) {
+            load(localPropsFile.inputStream())
+        }
+    }
+
+    repositories {
+        maven {
+            name = "ConfigMasterSDK"
+            url = uri("https://maven.pkg.github.com/spasarnaudov/ConfigMaster")
+            credentials {
+                username = localProperties.getProperty("gpr.user")
+                password = localProperties.getProperty("gpr.key")
+            }
+        }
+        mavenLocal()
+    }
+}
+
+// --- Auto-publish tasks ---
+
+// Automatically publish to local Maven repository after build
+tasks.register("buildAndPublishLocal") {
+    group = "publishing"
+    description = "Build library and publish to local Maven repository"
+
+    dependsOn("build")
+    finalizedBy("publishToMavenLocal")
 }
