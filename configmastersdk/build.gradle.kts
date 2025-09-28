@@ -15,14 +15,10 @@ val versionName = "0.0.$versionCode"
 
 android {
     namespace = "com.configmastersdk"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
-
-        android.buildFeatures.buildConfig = true
-        buildConfigField("int", "VERSION_CODE", versionCode.toString())
-        buildConfigField("String", "VERSION_NAME", "\"$versionName\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -43,6 +39,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+    }
+    lint {
+        // Don’t run lint on test sources
+        ignoreTestSources = true
     }
 }
 
@@ -67,7 +67,6 @@ dependencies {
 
     //Rood
     implementation(libs.androidx.room.runtime)
-    annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
