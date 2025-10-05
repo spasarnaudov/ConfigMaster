@@ -9,13 +9,41 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import com.spascoding.configmastersdk.ConfigMasterSdk
+import com.spascoding.configmastersdk.domain.usecases.DeleteConfigUseCase
+import com.spascoding.configmastersdk.domain.usecases.GetAllConfigNamesUseCase
+import com.spascoding.configmastersdk.domain.usecases.GetConfigUseCase
+import com.spascoding.configmastersdk.domain.usecases.InsertConfigUseCase
 import com.spascoding.configmastersdk.presentation.theme.ConfigMasterTheme
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class ConfigMasterActivity : ComponentActivity() {
+
+    private val viewModel by lazy {
+        val repo = ConfigMasterSdk.provideRepository()
+        val prefs = ConfigMasterSdk.providePreferences()
+
+        val insert = InsertConfigUseCase(repo)
+        val getAll = GetAllConfigNamesUseCase(repo)
+        val get = GetConfigUseCase(repo)
+        val delete = DeleteConfigUseCase(repo)
+
+        ConfigViewModel(
+            insertConfigUseCase = insert,
+            getConfigUseCase = get,
+            getAllConfigNamesUseCase = getAll,
+            deleteConfigUseCase = delete,
+            appPreferences = prefs
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Safety check
+        require(ConfigMasterSdk.isInitialized()) {
+            "ConfigMasterSdk not initialized. You must call ConfigMasterSdk.initialize(context) in your Application or before starting this Activity."
+        }
+
         enableEdgeToEdge()
         setContent {
             ConfigMasterTheme {
@@ -25,7 +53,7 @@ class ConfigMasterActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        ConfigScreen()
+                        ConfigScreen(viewModel = viewModel)
                     }
                 }
             }

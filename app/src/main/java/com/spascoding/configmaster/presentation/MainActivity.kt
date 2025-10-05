@@ -18,7 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import com.spascoding.configmastersdk.presentation.ConfigMasterActivity
+import com.spascoding.configmastersdk.presentation.ConfigMasterHiltActivity
 import com.spascoding.configmastersdk.presentation.theme.ConfigMasterTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -67,7 +67,7 @@ fun ConfigMasterLabel() {
 //                        } else {
                             // Release build → need 10 taps
 //                            if (tapCount >= 10) {
-                                context.startActivity(Intent(context, ConfigMasterActivity::class.java))
+                                context.startActivity(Intent(context, ConfigMasterHiltActivity::class.java))
 //                                tapCount = 0
 //                            }
 //                        }
