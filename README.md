@@ -1,7 +1,90 @@
+# ConfigMaster SDK
+
+ConfigMaster SDK is a lightweight configuration manager for Android apps.  
+Each host app has its own instance of **ConfigMasterSDK** with its own local database.
+
+---
+
+## 📌 Features
+
+- Store and read configurations as JSON
+- Works in **Hilt and non-Hilt apps**
+- Supports **suspend (coroutines)** and **async (callback)** APIs
+
+---
+
+## ⚙️ Setup Guide
+
+1. Add SDK module to your project:
+
+```gradle
+implementation("com.spascoding:config-master-sdk:0.0.1")
+```
+2. Initialize in your Application **(only for non-hilt host app)**:
+
+```kotlin
+class HostApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        ConfigMasterSdk.initialize(this) //You don't need from this for hilt projects
+    }
+}
+```
+
+---
+
+## 🛠 Usage
+
+### Insert configuration JSON
+
+#### Kotlin
+```kotlin
+ConfigMasterSdk.insertJsonAsync("config_name", jsonString) // Async
+lifecycleScope.launch { ConfigMasterSdk.insertJson("DemoApp", jsonString) } // Suspend
+```
+
+#### Java
+```java
+// Async
+ConfigMasterSdk.insertJsonAsync("config_name", jsonString);
+
+// Suspend equivalent (using coroutine in Kotlin only), Java would typically use AsyncTask or Executor
+```
+
+### Read full configuration
+
+#### Kotlin
+```kotlin
+ConfigMasterSdk.getModifiedJsonAsync("config_name") { json -> /* use json */ } // Async
+lifecycleScope.launch { val json = ConfigMasterSdk.getModifiedJson("config_name") } // Suspend
+```
+
+#### java
+```java
+ConfigMasterSdk.getModifiedJsonAsync("config_name", json -> {
+    // use json
+});
+```
+
+### Open ConfigMasterActivity to edit configuration
+
+#### Kotlin
+```kotlin
+val intent = Intent(applicationContext, ConfigMasterActivity::class.java)
+startActivity(intent)
+```
+
+#### Java
+```java
+Intent intent = new Intent(this, ConfigMasterActivity.class);
+startActivity(intent);
+```
+---
+
 # ConfigMasterHelper
 
 `ConfigMasterHelper` is a small utility library for integrating **ConfigMaster** into Android apps.  
-It allows client applications (Demo apps) to **insert, update, and fetch configurations** from the central ConfigMaster app via a `ContentProvider`.
+It allows host applications to **insert, update, and fetch configurations** from the central ConfigMaster app via a `ContentProvider`.
 
 This library provides both:
 - ✅ Kotlin implementation (`com.spascoding.configmasterhelper.ConfigMasterHelper`)
@@ -20,60 +103,7 @@ This library provides both:
 
 ## ⚙️ Setup Guide
 
-To use **ConfigMasterHelper** in your Android project, follow these steps:
-
-### 1. Add GitHub Maven Repository
-
-In your **`settings.gradle.kts`**, ensure you have the GitHub Maven repository configured:
-
-```kotlin
-val localProperties = Properties().apply {
-    val localPropsFile = File(rootDir, "local.properties")
-    if (localPropsFile.exists()) {
-        load(FileInputStream(localPropsFile))
-    } else {
-        println("local.properties not found in root directory!")
-    }
-}
-
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-
-    repositories {
-        google()
-        mavenCentral()
-        mavenLocal()
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/spasarnaudov/ConfigMaster")
-            credentials {
-                username = localProperties.getProperty("gpr.user") ?: ""
-                password = localProperties.getProperty("gpr.key") ?: ""
-            }
-        }
-    }
-}
-```
-
-### 2. Configure Credentials
-
-Create or update the local.properties file in the root of your project and add:
-
-```agsl
-gpr.user=your_github_username
-gpr.key=your_personal_access_token
-```
-
-
-Replace your_github_username with your GitHub username.
-
-Replace your_personal_access_token with a GitHub Personal Access Token (PAT) that has at least read:packages permission.
-
-⚠️ Do not commit local.properties to version control — it contains secrets.
-
----
-
-### 3. Add Dependency
+### 1. Add Dependency
 
 In your app/build.gradle.kts, add the dependency:
 
@@ -83,7 +113,7 @@ dependencies {
 }
 ```
 
-### 4. Update Manifest
+### 2. Update Manifest
 
 In your AndroidManifest.xml, declare the ConfigMaster package and provider (needed for queries):
 
@@ -93,8 +123,6 @@ In your AndroidManifest.xml, declare the ConfigMaster package and provider (need
     <provider android:authorities="com.spascoding.configmaster.data.provider.ConfigProvider" />
 </queries>
 ```
-
-✅ Now you’re ready to use ConfigMasterHelper in your project!
 
 ---
 
@@ -139,36 +167,3 @@ Log.d("Demo", "Full JSON: " + jsonConfig);
 String cardsCount = ConfigMasterHelper.fetchConfigParam(context, "demoAppConfig", "cards");
 Log.d("Demo", "Cards count = " + cardsCount);
 ```
-
----
-
-## 🔍 API Reference
-
-### Kotlin: `ConfigMasterHelper`
-
-| Function | Description |
-|----------|-------------|
-| `insertConfig(context, configName, jsonData)` | Insert or update a configuration (JSON string). |
-| `fetchConfig(context, configName): String?` | Fetch full configuration as JSON. |
-| `fetchConfigParam(context, configName, paramKey): String?` | Fetch one parameter value from config JSON. |
-
----
-
-### Java: `ConfigMasterHelper`
-
-| Function | Description |
-|----------|-------------|
-| `insertConfig(Context, String, String)` | Insert or update a configuration (JSON string). |
-| `fetchConfig(Context, String)` | Fetch full configuration as JSON. |
-| `fetchConfigParam(Context, String, String)` | Fetch one parameter value from config JSON. |
-
----
-
-## 📦 Notes
-
-- Configurations are stored in the **ConfigMaster** app, not inside the demo app.
-- Demo apps communicate with ConfigMaster through its `ContentProvider`:
-
-```content://com.spascoding.configmaster.data.provider.ConfigProvider```
-
----
