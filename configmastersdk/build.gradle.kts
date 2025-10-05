@@ -123,3 +123,11 @@ tasks.register("buildAndPublishLocal") {
     dependsOn("build")
     finalizedBy("publishToMavenLocal")
 }
+
+tasks.register("buildAndPublishGithub") {
+    group = "publishing"
+    description = "Build library and publish to GitHub Maven repository"
+
+    dependsOn("build")
+    finalizedBy("publish")
+}
