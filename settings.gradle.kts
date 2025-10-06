@@ -1,3 +1,7 @@
+import java.io.FileInputStream
+import java.util.Properties
+import kotlin.apply
+
 pluginManagement {
     repositories {
         google {
@@ -11,11 +15,28 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+val localProperties = Properties().apply {
+    val localPropsFile = File(rootDir, "local.properties") // rootDir instead of rootProject
+    if (localPropsFile.exists()) {
+        load(FileInputStream(localPropsFile))
+    } else {
+        println("local.properties not found in root directory!")
+    }
+}
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/spasarnaudov/ConfigMaster")
+            credentials {
+                username = localProperties.getProperty("gpr.user") ?: ""
+                password = localProperties.getProperty("gpr.key") ?: ""
+            }
+        }
     }
 }
 
@@ -23,3 +44,5 @@ rootProject.name = "ConfigMaster"
 include(":app")
 include(":configmasterhelper")
 include(":configmastersdk")
+include(":samples:contentprovidersample")
+project(":samples:contentprovidersample").projectDir = file("samples/contentprovidersample")
