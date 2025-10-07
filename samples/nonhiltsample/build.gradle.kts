@@ -2,16 +2,14 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
 }
 
 android {
-    namespace = "com.spascoding.contentprovidersample"
+    namespace = "com.spascoding.nonhiltsample"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.spascoding.contentprovidersample"
+        applicationId = "com.spascoding.nonhiltsample"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -42,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":configmasterhelper"))
+    implementation(project(":configmastersdk"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -59,9 +57,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    //Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.android.compiler)
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 }

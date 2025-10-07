@@ -13,6 +13,9 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/configmasterhelper" />
             <option value="$PROJECT_DIR$/configmastersdk" />
+            <option value="$PROJECT_DIR$/samples" />
+            <option value="$PROJECT_DIR$/samples/contentprovidersample" />
+            <option value="$PROJECT_DIR$/samples/nonhiltsample" />
           </set>
         </option>
       </GradleProjectSettings>
