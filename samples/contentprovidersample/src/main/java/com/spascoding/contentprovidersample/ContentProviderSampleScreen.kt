@@ -23,9 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.spascoding.configmasterui.SearchBar
 import com.spascoding.contentprovidersample.components.JsonViewer
 import com.spascoding.contentprovidersample.components.AddConfigDialog
-import com.spascoding.contentprovidersample.components.SearchBar
 import org.json.JSONObject
 
 @Composable

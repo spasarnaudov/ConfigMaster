@@ -43,6 +43,7 @@ android {
 
 dependencies {
     implementation(project(":configmasterhelper"))
+    implementation(project(":configmasterui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

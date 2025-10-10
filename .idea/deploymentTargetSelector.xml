@@ -11,6 +11,9 @@
       <SelectionState runConfigName="samples.nonhiltsample">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="samples.contentprovidersample">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

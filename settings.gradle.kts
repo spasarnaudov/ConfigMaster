@@ -44,6 +44,7 @@ rootProject.name = "ConfigMaster"
 include(":app")
 include(":configmasterhelper")
 include(":configmastersdk")
+include(":configmasterui")
 include(":samples:contentprovidersample")
 project(":samples:contentprovidersample").projectDir = file("samples/contentprovidersample")
 include(":samples:nonhiltsample")

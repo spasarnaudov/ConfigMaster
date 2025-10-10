@@ -1,4 +1,4 @@
-package com.spascoding.contentprovidersample.components
+package com.spascoding.configmasterui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
