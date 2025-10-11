@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.spascoding.configmasterui.SearchBar
-import com.spascoding.contentprovidersample.components.JsonViewer
+import com.spascoding.configmasterui.JsonViewer
 import com.spascoding.configmasterui.ConfigDialog
 import org.json.JSONObject
 
@@ -85,10 +85,17 @@ fun ContentProviderSampleScreen(
         if (fetchConfig.isNotBlank()) {
             receivedConfig?.let { config ->
                 JsonViewer(
-                    config = config,
-                    onEditConfirmed = { editedPairs ->
-                        // Convert ConfigItems from JsonViewer into key–value pairs
-                        configPairs = editedPairs.map { it.name to it.jsonData }
+                    configName = fetchConfig,
+                    jsonData = config.jsonData,
+                    onEditConfirmed = { editedJson ->
+                        // Convert the JSON string to a list of key-value pairs
+                        val jsonObject = JSONObject(editedJson)
+                        val pairs = mutableListOf<Pair<String, String>>()
+                        for (key in jsonObject.keys()) {
+                            pairs.add(key to jsonObject.optString(key, ""))
+                        }
+
+                        configPairs = pairs
                         editConfigName = fetchConfig
                         isEditMode = true
                         showAddDialog = true

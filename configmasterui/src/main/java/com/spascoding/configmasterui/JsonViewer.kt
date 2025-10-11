@@ -1,13 +1,8 @@
-package com.spascoding.contentprovidersample.components
+package com.spascoding.configmasterui
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -15,31 +10,27 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.spascoding.contentprovidersample.ConfigItem
 import org.json.JSONObject
 import kotlin.collections.iterator
 
 @Composable
 fun JsonViewer(
-    config: ConfigItem,
-    onEditConfirmed: (editedConfigItems: List<ConfigItem>) -> Unit,
+    configName: String,
+    jsonData: String,
+    onEditConfirmed: (editedJson: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }
 
-    val formattedJson = remember(config.jsonData) {
+    val formattedJson = remember(jsonData) {
         try {
-            JSONObject(config.jsonData).toString(4)
+            JSONObject(jsonData).toString(4)
         } catch (e: Exception) {
-            config.jsonData
+            jsonData
         }
     }
 
@@ -60,9 +51,7 @@ fun JsonViewer(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .fillMaxWidth(),
-                style = LocalTextStyle.current.copy(
-                    lineHeight = 20.sp
-                )
+                style = LocalTextStyle.current.copy(lineHeight = 20.sp)
             )
         }
     }
@@ -71,13 +60,11 @@ fun JsonViewer(
         AlertDialog(
             onDismissRequest = { showConfirmDialog = false },
             title = { Text("Edit Configuration?") },
-            text = { Text("Do you want to edit the configuration for App ID: ${config.name}?") },
+            text = { Text("Do you want to edit the configuration for App ID: $configName?") },
             confirmButton = {
                 TextButton(onClick = {
                     showConfirmDialog = false
-                    onEditConfirmed(
-                        parseJsonToKeyValueList(config.jsonData)
-                    )
+                    onEditConfirmed(jsonData)
                 }) {
                     Text("Yes")
                 }
@@ -91,11 +78,18 @@ fun JsonViewer(
     }
 }
 
-fun parseJsonToKeyValueList(json: String): List<ConfigItem> {
-    val list = mutableListOf<ConfigItem>()
-    val jsonObject = JSONObject(json)
-    for (key in jsonObject.keys()) {
-        list.add(ConfigItem(key, jsonObject.optString(key, "")))
+/**
+ * Helper function: Converts JSON string into list of key-value pairs.
+ */
+fun parseJsonToMap(json: String): Map<String, String> {
+    return try {
+        val map = mutableMapOf<String, String>()
+        val jsonObject = JSONObject(json)
+        for (key in jsonObject.keys()) {
+            map[key] = jsonObject.optString(key, "")
+        }
+        map
+    } catch (e: Exception) {
+        emptyMap()
     }
-    return list
 }
