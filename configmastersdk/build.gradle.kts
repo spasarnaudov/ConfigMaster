@@ -10,7 +10,7 @@ plugins {
     id("maven-publish")
 }
 
-val versionCode = 2
+val versionCode = 3
 val versionName = "0.0.$versionCode"
 
 android {
@@ -116,7 +116,7 @@ publishing {
 // --- Auto-publish tasks ---
 
 // Automatically publish to local Maven repository after build
-tasks.register("buildAndPublishLocal") {
+tasks.register("sdkBuildAndPublishLocal") {
     group = "publishing"
     description = "Build library and publish to local Maven repository"
 
@@ -124,7 +124,7 @@ tasks.register("buildAndPublishLocal") {
     finalizedBy("publishToMavenLocal")
 }
 
-tasks.register("buildAndPublishGithub") {
+tasks.register("sdkBuildAndPublishGithub") {
     group = "publishing"
     description = "Build library and publish to GitHub Maven repository"
 

@@ -81,7 +81,7 @@ publishing {
 // --- Auto-publish tasks ---
 
 // Automatically publish to local Maven repository after build
-tasks.register("buildAndPublishLocal") {
+tasks.register("helperBuildAndPublishLocal") {
     group = "publishing"
     description = "Build library and publish to local Maven repository"
 
@@ -89,7 +89,7 @@ tasks.register("buildAndPublishLocal") {
     finalizedBy("publishToMavenLocal")
 }
 
-tasks.register("buildAndPublishGithub") {
+tasks.register("helperBuildAndPublishGithub") {
     group = "publishing"
     description = "Build library and publish to GitHub Maven repository"
 
