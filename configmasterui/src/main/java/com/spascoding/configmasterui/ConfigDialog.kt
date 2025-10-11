@@ -1,4 +1,4 @@
-package com.spascoding.contentprovidersample.components
+package com.spascoding.configmasterui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,73 +29,83 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.spascoding.contentprovidersample.ConfigItem
 
 @Composable
-fun AddConfigDialog(
+fun ConfigDialog(
     onDismiss: () -> Unit,
-    onAdd: (String, List<ConfigItem>) -> Unit,
-    initialConfig: String = "",
-    initialConfigItems: List<ConfigItem> = emptyList()
+    onAdd: (String, List<Pair<String, String>>) -> Unit,
+    initialConfigName: String = "",
+    initialPairs: List<Pair<String, String>> = emptyList()
 ) {
-    var configName by remember { mutableStateOf(initialConfig) }
-    val configItems = remember { mutableStateListOf<ConfigItem>().apply { addAll(initialConfigItems.ifEmpty { listOf(ConfigItem()) }) } }
+    var configName by remember { mutableStateOf(initialConfigName) }
+    val keyValuePairs = remember {
+        mutableStateListOf<Pair<String, String>>().apply {
+            addAll(initialPairs.ifEmpty { listOf("" to "") })
+        }
+    }
 
     val listState = rememberLazyListState()
     var shouldScroll by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (initialConfig.isBlank()) "New Configuration" else "Edit Configuration") },
+        title = {
+            Text(if (initialConfigName.isBlank()) "New Configuration" else "Edit Configuration")
+        },
         text = {
             Column {
+                // Configuration name input
                 OutlinedTextField(
                     value = configName,
                     onValueChange = { configName = it },
-                    label = { Text("Name") },
+                    label = { Text("Configuration Name") },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = initialConfig.isBlank() // prevent editing appId in edit mode
+                    enabled = initialConfigName.isBlank() // Prevent renaming in edit mode
                 )
 
                 Spacer(Modifier.height(8.dp))
                 Text("Parameters", fontWeight = FontWeight.Bold)
 
+                // Key–Value list
                 LazyColumn(
                     state = listState,
                     modifier = Modifier
                         .heightIn(max = 300.dp)
                         .fillMaxWidth()
                 ) {
-                    items(configItems.size) { index ->
-                        val configItem = configItems[index]
+                    items(keyValuePairs.size) { index ->
+                        val (key, value) = keyValuePairs[index]
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(vertical = 4.dp)
                         ) {
                             OutlinedTextField(
-                                value = configItem.name,
+                                value = key,
                                 onValueChange = {
-                                    configItems[index] = configItem.copy(name = it)
+                                    keyValuePairs[index] = it to value
                                 },
-                                label = { Text("Param") },
+                                label = { Text("Key") },
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(end = 4.dp)
                             )
                             OutlinedTextField(
-                                value = configItem.jsonData,
+                                value = value,
                                 onValueChange = {
-                                    configItems[index] = configItem.copy(jsonData = it)
+                                    keyValuePairs[index] = key to it
                                 },
                                 label = { Text("Value") },
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(start = 4.dp)
                             )
-                            IconButton(onClick = {
-                                if (configItems.size > 1) configItems.removeAt(index)
-                            }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Remove")
+                            IconButton(
+                                onClick = {
+                                    if (keyValuePairs.size > 1) keyValuePairs.removeAt(index)
+                                }
+                            ) {
+                                Icon(Icons.Default.Delete, contentDescription = "Remove pair")
                             }
                         }
                     }
@@ -104,16 +114,16 @@ fun AddConfigDialog(
                 Spacer(Modifier.height(8.dp))
 
                 Button(onClick = {
-                    configItems.add(ConfigItem())
+                    keyValuePairs.add("" to "")
                     shouldScroll = true
                 }) {
-                    Text("Add Key-Value Pair")
+                    Text("Add Key–Value Pair")
                 }
 
-                // Auto scroll to last item
-                LaunchedEffect(shouldScroll, configItems.size) {
+                // Auto-scroll to the new item
+                LaunchedEffect(shouldScroll, keyValuePairs.size) {
                     if (shouldScroll) {
-                        listState.animateScrollToItem(configItems.lastIndex)
+                        listState.animateScrollToItem(keyValuePairs.lastIndex)
                         shouldScroll = false
                     }
                 }
@@ -122,10 +132,10 @@ fun AddConfigDialog(
         confirmButton = {
             Button(onClick = {
                 if (configName.isNotBlank()) {
-                    onAdd(configName.trim(), configItems.toList())
+                    onAdd(configName.trim(), keyValuePairs.toList())
                 }
             }) {
-                Text(if (initialConfig.isBlank()) "Add" else "Update")
+                Text(if (initialConfigName.isBlank()) "Add" else "Update")
             }
         },
         dismissButton = {

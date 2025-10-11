@@ -1,31 +1,17 @@
 package com.spascoding.contentprovidersample
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.spascoding.configmasterui.SearchBar
 import com.spascoding.contentprovidersample.components.JsonViewer
-import com.spascoding.contentprovidersample.components.AddConfigDialog
+import com.spascoding.configmasterui.ConfigDialog
 import org.json.JSONObject
 
 @Composable
@@ -39,7 +25,7 @@ fun ContentProviderSampleScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var isEditMode by remember { mutableStateOf(false) }
     var editConfigName by remember { mutableStateOf("") }
-    var configItems by remember { mutableStateOf<List<ConfigItem>>(emptyList()) }
+    var configPairs by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
 
     Column(
         modifier = modifier
@@ -53,11 +39,16 @@ fun ContentProviderSampleScreen(
             Text("Content Provider Sample", style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.width(24.dp))
             Button(
-                onClick = { showAddDialog = true}
+                onClick = {
+                    isEditMode = false
+                    showAddDialog = true
+                }
             ) {
-                Icon(Icons.Filled.Add, "Add Config")
+                Icon(Icons.Filled.Add, contentDescription = "Add Config")
             }
         }
+
+        Spacer(Modifier.height(8.dp))
 
         SearchBar(
             label = "Config name",
@@ -95,8 +86,10 @@ fun ContentProviderSampleScreen(
             receivedConfig?.let { config ->
                 JsonViewer(
                     config = config,
-                    onEditConfirmed = {
-                        configItems = it
+                    onEditConfirmed = { editedPairs ->
+                        // Convert ConfigItems from JsonViewer into key–value pairs
+                        configPairs = editedPairs.map { it.name to it.jsonData }
+                        editConfigName = fetchConfig
                         isEditMode = true
                         showAddDialog = true
                     }
@@ -105,25 +98,25 @@ fun ContentProviderSampleScreen(
         }
     }
 
+    // --- Add/Edit Config Dialog ---
     if (showAddDialog) {
-        AddConfigDialog(
+        ConfigDialog(
             onDismiss = {
                 showAddDialog = false
                 isEditMode = false
             },
             onAdd = { appId, keyValuePairs ->
                 val jsonObject = JSONObject()
-                keyValuePairs.forEach { config ->
-                    if (config.name.isNotBlank()) {
-                        jsonObject.put(config.name, config.jsonData)
+                keyValuePairs.forEach { (key, value) ->
+                    if (key.isNotBlank()) {
+                        jsonObject.put(key, value)
                     }
                 }
                 viewModel.addConfig(appId, jsonObject.toString())
                 showAddDialog = false
             },
-            initialConfig = if (isEditMode) editConfigName else "",
-            initialConfigItems = if (isEditMode) configItems else emptyList()
+            initialConfigName = if (isEditMode) editConfigName else "",
+            initialPairs = if (isEditMode) configPairs else emptyList()
         )
     }
-
 }
