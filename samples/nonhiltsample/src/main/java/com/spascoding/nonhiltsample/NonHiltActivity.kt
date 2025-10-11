@@ -32,6 +32,7 @@ class NonHiltActivity : ComponentActivity() {
                         Button(
                             onClick = {
                                 val intent = Intent(applicationContext, ConfigMasterActivity::class.java)
+                                intent.putExtra(ConfigMasterActivity.EXTRA_TITLE, "Non-Hilt Sample")
                                 startActivity(intent)
                             }
                         ) {

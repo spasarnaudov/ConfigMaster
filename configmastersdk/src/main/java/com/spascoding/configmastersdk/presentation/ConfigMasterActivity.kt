@@ -18,6 +18,10 @@ import com.spascoding.configmastersdk.presentation.theme.ConfigMasterTheme
 
 class ConfigMasterActivity : ComponentActivity() {
 
+    companion object {
+        const val EXTRA_TITLE = "extra_title"
+    }
+
     private val viewModel by lazy {
         val repo = ConfigMasterSdk.provideRepository()
         val prefs = ConfigMasterSdk.providePreferences()
@@ -44,6 +48,11 @@ class ConfigMasterActivity : ComponentActivity() {
             "ConfigMasterSdk not initialized. You must call ConfigMasterSdk.initialize(context) in your Application or before starting this Activity."
         }
 
+        var title = ""
+        if (intent.hasExtra(EXTRA_TITLE)) {
+            title = intent.getStringExtra(EXTRA_TITLE) ?: ""
+        }
+
         enableEdgeToEdge()
         setContent {
             ConfigMasterTheme {
@@ -53,7 +62,10 @@ class ConfigMasterActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        ConfigScreen(viewModel = viewModel)
+                        ConfigMasterScreen(
+                            viewModel = viewModel,
+                            title = title
+                        )
                     }
                 }
             }

@@ -14,8 +14,19 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ConfigMasterHiltActivity : ComponentActivity() {
+
+    companion object {
+        const val EXTRA_TITLE = "extra_title"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        var title = ""
+        if (intent.hasExtra(EXTRA_TITLE)) {
+            title = intent.getStringExtra(EXTRA_TITLE) ?: ""
+        }
+
         enableEdgeToEdge()
         setContent {
             ConfigMasterTheme {
@@ -25,7 +36,9 @@ class ConfigMasterHiltActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        ConfigScreen()
+                        ConfigMasterScreen(
+                            title = title
+                        )
                     }
                 }
             }

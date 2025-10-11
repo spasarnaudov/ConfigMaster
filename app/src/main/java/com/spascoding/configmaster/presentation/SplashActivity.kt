@@ -38,10 +38,14 @@ class SplashActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val context = this
         setContent {
             SplashScreen(
                 onFinished = {
-                    startActivity(Intent(this, ConfigMasterHiltActivity::class.java))
+                    val intent = Intent(this, ConfigMasterHiltActivity::class.java)
+                    val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+                    intent.putExtra(ConfigMasterHiltActivity.EXTRA_TITLE, "Config Master - v" + packageInfo.versionName.toString())
+                    startActivity(intent)
                     finish()
                 }
             )
