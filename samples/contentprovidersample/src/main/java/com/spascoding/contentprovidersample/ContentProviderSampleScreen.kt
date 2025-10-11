@@ -86,7 +86,7 @@ fun ContentProviderSampleScreen(
             receivedConfig?.let { config ->
                 JsonViewer(
                     configName = fetchConfig,
-                    jsonData = config.jsonData,
+                    jsonData = config.second,
                     onEditConfirmed = { editedJson ->
                         // Convert the JSON string to a list of key-value pairs
                         val jsonObject = JSONObject(editedJson)
