@@ -18,7 +18,7 @@ Each host app has its own instance of **ConfigMasterSDK** with its own local dat
 1. Add SDK module to your project:
 
 ```gradle
-implementation("com.spascoding:config-master-sdk:0.0.1")
+implementation("com.spascoding:config-master-sdk:<VERSION>")
 ```
 2. Initialize in your Application **(only for non-hilt host app)**:
 
@@ -40,7 +40,7 @@ class HostApp : Application() {
 #### Kotlin
 ```kotlin
 ConfigMasterSdk.insertJsonAsync("config_name", jsonString) // Async
-lifecycleScope.launch { ConfigMasterSdk.insertJson("DemoApp", jsonString) } // Suspend
+lifecycleScope.launch { ConfigMasterSdk.insertJson("config_name", jsonString) } // Suspend
 ```
 
 #### Java
@@ -71,12 +71,14 @@ ConfigMasterSdk.getModifiedJsonAsync("config_name", json -> {
 #### Kotlin
 ```kotlin
 val intent = Intent(applicationContext, ConfigMasterActivity::class.java)
+intent.putExtra(ConfigMasterActivity.EXTRA_TITLE, "config_master_name")
 startActivity(intent)
 ```
 
 #### Java
 ```java
 Intent intent = new Intent(this, ConfigMasterActivity.class);
+intent.putExtra(ConfigMasterActivity.EXTRA_TITLE, "config_master_name");
 startActivity(intent);
 ```
 ---
@@ -109,7 +111,7 @@ In your app/build.gradle.kts, add the dependency:
 
 ```agsl
 dependencies {
-    implementation("com.spascoding:config-master-helper:0.0.3")
+    implementation("com.spascoding:config-master-helper:<VERSION>")
 }
 ```
 
@@ -135,16 +137,16 @@ import com.spascoding.configmasterhelper.ConfigMasterHelper
 // Insert configuration
 ConfigMasterHelper.insertConfig(
     context = this,
-    configName = "demoAppConfig",
+    configName = "config_name",
     jsonData = """{"cards": "5", "theme": "dark"}"""
 )
 
 // Fetch full config
-val jsonConfig = ConfigMasterHelper.fetchConfig(this, "demoAppConfig")
+val jsonConfig = ConfigMasterHelper.fetchConfig(this, "config_name")
 println("Full JSON: $jsonConfig")
 
 // Fetch only one parameter
-val cardsCount = ConfigMasterHelper.fetchConfigParam(this, "demoAppConfig", "cards")
+val cardsCount = ConfigMasterHelper.fetchConfigParam(this, "config_name", "cards")
 println("Cards count = $cardsCount")
 ```
 
@@ -155,15 +157,15 @@ import com.spascoding.configmasterhelper.javahelper.ConfigMasterHelper;
 // Insert configuration
 ConfigMasterHelper.insertConfig(
     context,
-    "demoAppConfig",
+    "config_name",
     "{\"cards\": \"5\", \"theme\": \"dark\"}"
 );
 
 // Fetch full config
-String jsonConfig = ConfigMasterHelper.fetchConfig(context, "demoAppConfig");
+String jsonConfig = ConfigMasterHelper.fetchConfig(context, "config_name");
 Log.d("Demo", "Full JSON: " + jsonConfig);
 
 // Fetch only one parameter
-String cardsCount = ConfigMasterHelper.fetchConfigParam(context, "demoAppConfig", "cards");
+String cardsCount = ConfigMasterHelper.fetchConfigParam(context, "config_name", "cards");
 Log.d("Demo", "Cards count = " + cardsCount);
 ```
