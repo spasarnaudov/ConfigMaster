@@ -7,15 +7,5 @@ class NonHiltApp : Application() {
     override fun onCreate() {
         super.onCreate()
         ConfigMasterSdk.initialize(this)
-        ConfigMasterSdk.insertJsonAsync(
-            "NonHiltSample",
-            """
-                {
-                    "card_count": "5",
-                    "theme": "dark",
-                    "api_url": "https://api.demo.com"
-                }
-            """
-        )
     }
 }

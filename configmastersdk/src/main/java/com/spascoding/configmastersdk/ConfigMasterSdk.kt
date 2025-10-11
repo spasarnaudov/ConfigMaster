@@ -52,30 +52,30 @@ object ConfigMasterSdk {
 
     internal fun isInitialized() = initialized
 
-    /** Async helper (non-suspend) **/
+    /** Async helper to insert JSON */
     fun insertJsonAsync(configName: String, json: String) {
         scope.launch {
             InsertConfigUseCase(provideRepository()).execute(configName, json)
         }
     }
 
-    /** Suspend version if user prefers coroutine **/
+    /** Suspend helper to insert JSON */
     suspend fun insertJson(configName: String, json: String) {
         InsertConfigUseCase(provideRepository()).execute(configName, json)
     }
 
-    /** Suspend version: get all parameters as JSON **/
-    suspend fun getModifiedJson(configName: String): JSONObject {
+    /** Suspend: get all parameters as JSON string */
+    suspend fun getModifiedJson(configName: String): String {
         val configs = GetConfigUseCase(provideRepository()).execute(configName)
         val json = JSONObject()
         configs.forEach {
             json.put(it.parameter, it.modifiedValue.ifEmpty { it.originalValue })
         }
-        return json
+        return json.toString()
     }
 
-    /** Async version: get all parameters as JSON via callback **/
-    fun getModifiedJsonAsync(configName: String, onResult: (JSONObject) -> Unit) {
+    /** Async: get all parameters as JSON string */
+    fun getModifiedJsonAsync(configName: String, onResult: (String) -> Unit) {
         scope.launch {
             val configs = GetConfigUseCase(provideRepository()).execute(configName)
             val json = JSONObject()
@@ -83,19 +83,19 @@ object ConfigMasterSdk {
                 json.put(it.parameter, it.modifiedValue.ifEmpty { it.originalValue })
             }
             withContext(Dispatchers.Main) {
-                onResult(json)
+                onResult(json.toString())
             }
         }
     }
 
-    /** Suspend version: get a single parameter **/
+    /** Suspend: get a single parameter as String? */
     suspend fun getModifiedParameter(configName: String, parameter: String): String? {
         val configs = GetConfigUseCase(provideRepository()).execute(configName)
         return configs.find { it.parameter == parameter }?.modifiedValue?.takeIf { it.isNotEmpty() }
             ?: configs.find { it.parameter == parameter }?.originalValue
     }
 
-    /** Async version: get a single parameter via callback **/
+    /** Async: get a single parameter as String? */
     fun getModifiedParameterAsync(
         configName: String,
         parameter: String,
