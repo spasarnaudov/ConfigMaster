@@ -77,19 +77,3 @@ fun JsonViewer(
         )
     }
 }
-
-/**
- * Helper function: Converts JSON string into list of key-value pairs.
- */
-fun parseJsonToMap(json: String): Map<String, String> {
-    return try {
-        val map = mutableMapOf<String, String>()
-        val jsonObject = JSONObject(json)
-        for (key in jsonObject.keys()) {
-            map[key] = jsonObject.optString(key, "")
-        }
-        map
-    } catch (e: Exception) {
-        emptyMap()
-    }
-}

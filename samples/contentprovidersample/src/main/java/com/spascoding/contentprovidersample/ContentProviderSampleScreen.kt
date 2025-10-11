@@ -22,7 +22,7 @@ fun ContentProviderSampleScreen(
     val receivedConfig by viewModel.receivedConfig.collectAsState()
     var fetchConfig by remember { mutableStateOf("") }
     var fetchConfigParameter by remember { mutableStateOf("") }
-    var showAddDialog by remember { mutableStateOf(false) }
+    var showConfigDialog by remember { mutableStateOf(false) }
     var isEditMode by remember { mutableStateOf(false) }
     var editConfigName by remember { mutableStateOf("") }
     var configPairs by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
@@ -41,7 +41,7 @@ fun ContentProviderSampleScreen(
             Button(
                 onClick = {
                     isEditMode = false
-                    showAddDialog = true
+                    showConfigDialog = true
                 }
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add Config")
@@ -98,7 +98,7 @@ fun ContentProviderSampleScreen(
                         configPairs = pairs
                         editConfigName = fetchConfig
                         isEditMode = true
-                        showAddDialog = true
+                        showConfigDialog = true
                     }
                 )
             }
@@ -106,10 +106,10 @@ fun ContentProviderSampleScreen(
     }
 
     // --- Add/Edit Config Dialog ---
-    if (showAddDialog) {
+    if (showConfigDialog) {
         ConfigDialog(
             onDismiss = {
-                showAddDialog = false
+                showConfigDialog = false
                 isEditMode = false
             },
             onAdd = { appId, keyValuePairs ->
@@ -120,7 +120,7 @@ fun ContentProviderSampleScreen(
                     }
                 }
                 viewModel.addConfig(appId, jsonObject.toString())
-                showAddDialog = false
+                showConfigDialog = false
             },
             initialConfigName = if (isEditMode) editConfigName else "",
             initialPairs = if (isEditMode) configPairs else emptyList()
