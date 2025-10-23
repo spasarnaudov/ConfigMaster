@@ -10,7 +10,7 @@ plugins {
     id("maven-publish")
 }
 
-val versionCode = 3
+val versionCode = 4
 val versionName = "0.0.$versionCode"
 
 android {
