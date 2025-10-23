@@ -20,6 +20,7 @@ class ConfigMasterActivity : ComponentActivity() {
 
     companion object {
         const val EXTRA_TITLE = "extra_title"
+        const val EXTRA_SELECTED_CONFIG = "extra_selected_config"
     }
 
     private val viewModel by lazy {
@@ -51,6 +52,12 @@ class ConfigMasterActivity : ComponentActivity() {
         var title = ""
         if (intent.hasExtra(EXTRA_TITLE)) {
             title = intent.getStringExtra(EXTRA_TITLE) ?: ""
+        }
+        if (intent.hasExtra(EXTRA_SELECTED_CONFIG)) {
+            val selectedConfig = intent.getStringExtra(EXTRA_SELECTED_CONFIG)
+            if (selectedConfig != null) {
+                viewModel.selectConfig(selectedConfig)
+            }
         }
 
         enableEdgeToEdge()

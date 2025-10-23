@@ -8,6 +8,7 @@ import android.database.MatrixCursor
 import android.net.Uri
 import android.util.Log
 import com.spascoding.configmaster.di.ConfigProviderEntryPoint
+import com.spascoding.configmaster.utils.NotificationHelper
 import com.spascoding.configmastersdk.domain.usecases.GetConfigUseCase
 import com.spascoding.configmastersdk.domain.usecases.InsertConfigUseCase
 import dagger.hilt.android.EntryPointAccessors
@@ -39,7 +40,7 @@ class ConfigProvider : ContentProvider() {
         insertConfigUseCase = EntryPointAccessors.fromApplication(
             appContext,
             ConfigProviderEntryPoint::class.java
-        ).getSaveConfigUseCase()
+        ).getInsertConfigUseCase()
         getConfigUseCase = EntryPointAccessors.fromApplication(
             appContext,
             ConfigProviderEntryPoint::class.java
@@ -90,7 +91,18 @@ class ConfigProvider : ContentProvider() {
                 val jsonData = values?.getAsString("jsonData")
                 if (configName != null && jsonData != null) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        insertConfigUseCase.execute(configName, jsonData) // 👈 sync logic
+                        val result = insertConfigUseCase.execute(configName, jsonData)
+                        if (result.hasChanges) {
+                            context?.let {
+                                NotificationHelper.showConfigUpdatedNotification(
+                                    it,
+                                    configName,
+                                    inserted = result.inserted,
+                                    updated = result.updated,
+                                    deleted = result.deleted
+                                )
+                            }
+                        }
                     }
                 }
                 uri

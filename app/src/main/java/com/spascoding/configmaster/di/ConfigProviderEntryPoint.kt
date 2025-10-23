@@ -10,7 +10,7 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 interface ConfigProviderEntryPoint {
 
-    fun getSaveConfigUseCase(): InsertConfigUseCase
+    fun getInsertConfigUseCase(): InsertConfigUseCase
     fun getConfigUseCase(): GetConfigUseCase
 
 }

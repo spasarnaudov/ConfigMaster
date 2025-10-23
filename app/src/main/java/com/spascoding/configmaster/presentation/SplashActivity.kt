@@ -1,9 +1,15 @@
 package com.spascoding.configmaster.presentation
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -26,8 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.spascoding.configmastersdk.presentation.ConfigMasterHiltActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -38,20 +46,59 @@ class SplashActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val context = this
+
         setContent {
-            SplashScreen(
-                onFinished = {
+            RequestNotificationPermission {
+                SplashScreen {
                     val intent = Intent(this, ConfigMasterHiltActivity::class.java)
-                    val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-                    intent.putExtra(ConfigMasterHiltActivity.EXTRA_TITLE, "Config Master - v" + packageInfo.versionName.toString())
+                    val packageInfo = packageManager.getPackageInfo(packageName, 0)
+                    intent.putExtra(
+                        ConfigMasterHiltActivity.EXTRA_TITLE, "Config Master - v${packageInfo.versionName}"
+                    )
                     startActivity(intent)
                     finish()
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun RequestNotificationPermission(
+    onResult: @Composable () -> Unit
+) {
+    val context = LocalContext.current
+    var checked by remember { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = {
+            checked = true // continue regardless
+            if (!it) {
+                Toast.makeText(context, "Notifications permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    )
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val permissionCheck = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
             )
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                checked = true
+            }
+        } else {
+            checked = true
         }
     }
 
+    if (checked) {
+        onResult()
+    }
 }
 
 @Composable
